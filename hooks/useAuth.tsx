@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
             setInitialLoading(false)
         })
     }, [auth])
+
     const signUp = async (email: string, password: string) => {
         setLoading(true)
 
@@ -81,8 +82,9 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
     }
 
     const logout = async () => {
+        console.log('hi')
         setLoading(true)
-        signOut(auth)
+        await signOut(auth)
             .then(() => setUser(null))
             .catch((error) => alert(error.message))
             .finally(() => setLoading(false))

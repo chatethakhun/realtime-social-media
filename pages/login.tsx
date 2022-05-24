@@ -1,44 +1,58 @@
 import Head from "next/head"
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { Input } from "../components/input";
 import useAuth from "../hooks/useAuth";
 
-type Inputs = {
+type AuthForm = {
     email: string,
     password: string,
 };
 
 
-export default () => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-    const { signUp } =  useAuth()
-    const onSubmit: SubmitHandler<Inputs> = async ( { email, password }) => {
-        await signUp(email, password)
+const Login = () => {
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<AuthForm>();
+    const [isSignInForm, setIsSignInFrom] = useState(true)
+    const { signUp, signIn } = useAuth()
+    const onSubmit: SubmitHandler<AuthForm> = async ({ email, password }) => {
+        if(!isSignInForm) {
+            await signUp(email, password)
+        }
+        else {
+            await signIn(email, password)
+        }   
+        
     }
 
     return (
-        <div className="container m-auto">
+        <div>
             <Head>
                 <title>Login</title>
             </Head>
             <div className="border w-2/5 m-auto text-center p-5">
-                <h1 className="text-5xl mb-3">Login</h1>
+                <h1 className="text-5xl mb-3">{isSignInForm ? 'Sign In' : 'Sign Up'}</h1>
                 <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col">
-                    {/* register your input into the hook by invoking the "register" function */}
-                    <input
-                        {...register("email", { required: true })}
+                    <Input id="email"
                         placeholder="Email"
-                        className="border px-3 py-2 mb-3" />
-
-                    {/* include validation with required or other standard HTML validation rules */}
-                    <input {...register("password", { required: true })}
+                        label="email"
+                        errorMessage={errors.email}
+                        {...register("email", { required: true })}
+                    ></Input>
+                    <Input id="password"
                         placeholder="Password"
-                        className="border px-3 py-2 mb-3" />
-                    {/* errors will return when field validation fails  */}
-                    {errors.password && <span>This field is required</span>}
+                        label="password"
+                        errorMessage={errors.password}
+                        {...register("password", { required: true })}
+                    ></Input>
 
                     <input type="submit" className="bg-teal-500 p-3 rounded text-white mb-3" />
+
+                    <p className="cursor-pointer" onClick={() => {setIsSignInFrom(!isSignInForm)}}>{!isSignInForm ? 'Sign In' : 'Sign Up'}</p>
                 </form>
             </div>
         </div>
     )
 }
+
+
+export default Login
