@@ -38,7 +38,7 @@ const Auth = () => {
             <div className={`${styles.bgimage} w-1/2 hidden lg:block`}></div>
             <div className="w-full lg:w-1/2 m-auto text-center p-5">
                 <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col w-full lg:w-2/5 m-auto shadow-xl">
-                    <div className={`uppercase text-white bg-${PRIMARY_COLOR_CLASS} h-16 mb-5 text-2xl flex justify-center items-center`}>
+                    <div className={`uppercase text-white bg-teal-500 h-16 mb-5 text-2xl flex justify-center items-center`}>
                         {`member ${isSignInForm ? 'Sign In' : 'Sign Up'}`}
                     </div>
                     <div className="p-4 pb-0 pt-1">
@@ -57,7 +57,7 @@ const Auth = () => {
                             {...register("password", { required: true })}
                         ></Input>
                         <button
-                            className={`bg-${PRIMARY_COLOR_CLASS} p-3 mt-1 rounded text-white mb-3 uppercase w-full disabled:opacity-50`}
+                            className={`bg-teal-500 p-3 mt-1 rounded text-white mb-3 uppercase w-full disabled:opacity-50`}
                             disabled={loading === true}>
                             {isSignInForm ? 'Sign In' : 'Sign Up'}
                         </button>
@@ -65,7 +65,7 @@ const Auth = () => {
 
                     <div className="flex gap-1 justify-center mb-3">
                         {`${isSignInForm ? `Don't` : 'Already'} Have an Account?`}
-                        <p className={`cursor-pointer text-${PRIMARY_COLOR_CLASS}`} onClick={() => { setIsSignInFrom(!isSignInForm) }}>{!isSignInForm ? 'Sign In' : 'Sign Up'}</p>
+                        <p className={`cursor-pointer text-teal-500`} onClick={() => { setIsSignInFrom(!isSignInForm) }}>{!isSignInForm ? 'Sign In' : 'Sign Up'}</p>
                     </div>
 
                 </form>
