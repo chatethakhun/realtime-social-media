@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 import styles from '../styles/components/inputs.module.scss'
+import { PRIMARY_COLOR_CLASS } from "../constants";
 
 interface InputProps {
     id: string;
@@ -38,7 +39,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                         type='text'
                         aria-label={label}
                         placeholder={placeholder}
-                        className={`border ${icon ? 'pr-3 pl-9' : 'px-2'} py-2 w-full focus-visible:border-teal-500 outline-none rounded`}
+                        className={`border ${icon ? 'pr-3 pl-9' : 'px-2'} py-2 w-full focus-visible:border-${PRIMARY_COLOR_CLASS} outline-none rounded`}
                         {...props}
                     />
                     {icon && <FontAwesomeIcon

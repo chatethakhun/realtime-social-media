@@ -7,7 +7,7 @@ import { ToastProvider } from 'react-toast-notifications';
 config.autoAddCss = false;
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <ToastProvider placement='bottom-right'>
+  return <ToastProvider placement='bottom-right' autoDismiss={true}>
     <AuthProvider>
       <Component {...pageProps} />
     </AuthProvider>
