@@ -1,12 +1,12 @@
-import { forwardRef } from "react";
+import { FC, forwardRef, InputHTMLAttributes } from "react";
 import { FieldErrors } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 import styles from '../styles/components/inputs.module.scss'
-import { PRIMARY_COLOR_CLASS } from "../constants";
+import { PRIMARY_COLOR_CLASS } from "../constants/colors";
 
-interface InputProps {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     id: string;
     name: string;
     label: string;
@@ -16,7 +16,7 @@ interface InputProps {
 }
 
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+export const Input: FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
     (
         {
             id,

@@ -8,7 +8,7 @@ import {
     faUser,
     faKey
 } from "@fortawesome/free-solid-svg-icons";
-import { PRIMARY_COLOR_CLASS } from "../constants";
+import { PRIMARY_COLOR_CLASS } from "../constants/colors";
 
 interface AuthForm {
     email: string,
@@ -17,7 +17,7 @@ interface AuthForm {
 
 
 const Auth = () => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<AuthForm>();
+    const { register, handleSubmit, formState: { errors } } = useForm<AuthForm>();
     const [isSignInForm, setIsSignInFrom] = useState(true)
     const { signUp, signIn, loading } = useAuth()
     const onSubmit: SubmitHandler<AuthForm> = async ({ email, password }) => {
