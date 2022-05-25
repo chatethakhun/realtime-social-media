@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
             } else {
                 setUser(null)
                 setLoading(true)
-                router.push('/login')
+                router.push('/auth')
             }
 
             setInitialLoading(false)
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
     }
 
     const logout = async () => {
-        console.log('hi')
+
         setLoading(true)
         await signOut(auth)
             .then(() => setUser(null))

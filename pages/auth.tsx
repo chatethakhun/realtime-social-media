@@ -15,7 +15,7 @@ interface AuthForm {
 };
 
 
-const Login = () => {
+const Auth = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm<AuthForm>();
     const [isSignInForm, setIsSignInFrom] = useState(true)
     const { signUp, signIn } = useAuth()
@@ -32,7 +32,7 @@ const Login = () => {
     return (
         <div className="flex h-screen">
             <Head>
-                <title>Login</title>
+                <title>Authenticate</title>
             </Head>
             <div className={`${styles.bgimage} w-1/2`}></div>
             <div className="w-1/2 m-auto text-center p-5">
@@ -71,4 +71,4 @@ const Login = () => {
 }
 
 
-export default Login
+export default Auth
