@@ -34,9 +34,9 @@ const Auth = () => {
             <Head>
                 <title>Authenticate</title>
             </Head>
-            <div className={`${styles.bgimage} w-1/2`}></div>
-            <div className="w-1/2 m-auto text-center p-5">
-                <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col w-2/5 m-auto shadow-xl">
+            <div className={`${styles.bgimage} w-1/2 hidden lg:block`}></div>
+            <div className="w-full lg:w-1/2 m-auto text-center p-5">
+                <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col w-full lg:w-2/5 m-auto shadow-xl">
                     <div className="uppercase text-white bg-teal-500 h-16 mb-5 text-2xl flex justify-center items-center">
                         {`member ${isSignInForm ? 'Sign In' : 'Sign Up'}`}
                     </div>
