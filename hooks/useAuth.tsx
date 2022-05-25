@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth'
 import { useRouter } from "next/router"
 import { auth } from '../lib/firebase'
+import {  useToasts } from 'react-toast-notifications';
 
 
 
@@ -42,6 +43,8 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
     const [initialLoading, setInitialLoading] = useState(true)
     const [error, setError] = useState(null)
     const router = useRouter()
+    const { addToast, removeAllToasts } = useToasts()
+    
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if(user) {
@@ -59,34 +62,35 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
 
     const signUp = async (email: string, password: string) => {
         setLoading(true)
-
+        removeAllToasts()
         await createUserWithEmailAndPassword(auth, email, password).then((useCredential) => {
             setUser(useCredential.user)
             router.push('/')
             setLoading(false)
         })
-            .catch((error) => alert(error.message))
+            .catch((error) => addToast(error.message, { appearance: 'error' }))
             .finally(() => setLoading(false))
     }
 
     const signIn = async (email: string, password: string) => {
         setLoading(true)
-
+        removeAllToasts()
         await signInWithEmailAndPassword(auth, email, password).then((useCredential) => {
             setUser(useCredential.user)
             router.push('/')
             setLoading(false)
         })
-            .catch((error) => alert(error.message))
+            .catch((error) => addToast(error.message, { appearance: 'error' }))
             .finally(() => setLoading(false))
     }
 
     const logout = async () => {
 
         setLoading(true)
+        removeAllToasts()
         await signOut(auth)
             .then(() => setUser(null))
-            .catch((error) => alert(error.message))
+            .catch((error) => addToast(error.message, { appearance: 'error' }))
             .finally(() => setLoading(false))
     }
 
