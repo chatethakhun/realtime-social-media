@@ -39,7 +39,7 @@ export const Input: FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
                         type='text'
                         aria-label={label}
                         placeholder={placeholder}
-                        className={`border ${icon ? 'pr-3 pl-9' : 'px-2'} py-2 w-full focus-visible:border-${PRIMARY_COLOR_CLASS} outline-none rounded`}
+                        className={`border ${icon ? 'pr-3 pl-9' : 'px-2'} py-2 w-full focus-visible:border-teal-500 outline-none rounded`}
                         {...props}
                     />
                     {icon && <FontAwesomeIcon
