@@ -51,6 +51,8 @@ const Home: NextPage = () => {
     }
 
     setLoading(false)
+    setMessage('')
+    setSelectedImage('')
     addToast('Create post successfully', { appearance: 'notice' })
   }
 
