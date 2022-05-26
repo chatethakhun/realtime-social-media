@@ -1,44 +1,79 @@
 
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { getDownloadURL, ref, uploadString } from 'firebase/storage'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
-import { db } from '../lib/firebase'
-
-import useOnClickOutside from '../hooks/useOnClickOutside'
-import PrimaryButton from '../components/button'
+import { db, storage } from '../lib/firebase'
 import EmojiPicker from '../components/emojipicker'
-
-
-// const Button = dynamic<EmojiProps>(import("../components/emojipicker"));
-
+import ImagePicker from '../components/imagepicker'
+import useToast from '../hooks/useToast'
+import Loading from '../components/loading'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faTimes
+} from "@fortawesome/free-solid-svg-icons";
+import Feeds from '../components/feeds'
 
 const Home: NextPage = () => {
   const { user, logout } = useAuth()
   const [message, setMessage] = useState<string>('')
   const [loading, setLoading] = useState(false)
-  const [showEmojis, setShowEmojis] = useState(false);
-  const emojiRef = useRef(null)
+  const [selectedImage, setSelectedImage] = useState<string>('')
+  const { addToast } = useToast()
+  
+
   const sendPost = async () => {
     setLoading(true)
 
-    const doc = await addDoc(collection(db, 'posts'), {
+    const docRef = await addDoc(collection(db, 'posts'), {
       message,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      userImage: user?.photoURL,
+      userEmail: user?.email,
+      userDisplayName: user?.displayName
     })
 
-    console.log(doc)
+    if (selectedImage) {
+      const imageRef = ref(storage, `posts/${docRef.id}/image`)
+      console.log(selectedImage)
+      await uploadString(imageRef, selectedImage, 'data_url')
+        .then(async () => {
+          const downloadUrl = await getDownloadURL(imageRef)
+          await updateDoc(doc(db, 'posts', docRef.id), {
+            imageUrl: downloadUrl
+          })
+        }).catch((error) => {
+          addToast(error.message, { appearance: 'error' })
+        })
+    }
+
+    setLoading(false)
+    addToast('Create post successfully', { appearance: 'notice' })
   }
 
   const selectEmoji = (event: any, emojiObject: any) => {
-    console.log(emojiObject)
     setMessage(message + emojiObject.emoji)
   }
 
-  useOnClickOutside(emojiRef, () => {setShowEmojis(false)});
+  const handleImageSelect = (image: File) => {
 
+    const reader = new FileReader()
+    reader.readAsDataURL(image)
+
+    reader.onload = function (readerEvent) {
+      if (readerEvent.target) {
+        setSelectedImage(readerEvent.target.result as string)
+      }
+    }
+
+  }
+
+  const removeSelectedImage = () => {
+    setSelectedImage('')
+  }
   return (
     <div>
       <Head>
@@ -59,14 +94,31 @@ const Home: NextPage = () => {
               await logout()
             }}>Logout</button>}
           </div>
-          <div className='col-span-2'>
+          <div className='col-span-2 mt-9'>
             <div className='message-form'>
-              <textarea name="message" value={message} onChange={(e) => setMessage(e.target.value)} />
-              
-
-              <EmojiPicker onEmojiClick={selectEmoji} />
-              <PrimaryButton label='Send Message' onClick={sendPost} disabled={!message}/>
+              <textarea name="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write Message..." className="resize-none w-full bg-transparent text-teal-500" />
+              <div className='border border-teal-500 mb-4'></div>
+              {selectedImage && <div className='mb-2 relative'>
+                <img src={selectedImage}></img>
+                <FontAwesomeIcon icon={faTimes}  className="absolute top-[10px] right-[10px] cursor-pointer bg-white p-1 rounded-full w-[1em] h-[1em]" onClick={removeSelectedImage}/>
+              </div>}
+              <div className='flex items-center'>
+                <div className='basis-3/4 flex gap-5'>
+                  <EmojiPicker onEmojiClick={selectEmoji} />
+                  <ImagePicker name='image' onSelected={handleImageSelect} />
+                </div>
+                <div className='basis-1/4 text-center'>
+                  <button onClick={sendPost} disabled={!message && !selectedImage} className="border rounded border-teal-500 px-3 py-1 ml-auto w-[100px] flex justify-center text-teal-500 disabled:border-teal-200 disabled:text-teal-200 cursor-pointer">
+                    { !loading ? 'Post' : <Loading />}
+                  </button>
+                </div>
+              </div>
             </div>
+            <div className='border border-teal-500 mb-4 mt-4'></div>
+            
+
+            <Feeds />
+
           </div>
           <div>
             Right bar

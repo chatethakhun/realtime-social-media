@@ -19,9 +19,9 @@ const EmojiPicker = ({ onEmojiClick }: EmojiProps) => {
     useOnClickOutside(ref, () => {setShowEmojis(false)})
     
     return (
-        <div>
-            <FontAwesomeIcon icon={faSmile} forwardedRef={ref} onClick={() => setShowEmojis(!showEmojis)}/>
-            {showEmojis && <div  ref={ref} style={{ width: 280 }}><Picker onEmojiClick={onEmojiClick} /></div>}
+        <div className='relative'>
+            <FontAwesomeIcon icon={faSmile} forwardedRef={ref} onClick={() => setShowEmojis(!showEmojis)} className="text-teal-500"/>
+            {showEmojis && <div className='w-[280px] absolute'  ref={ref}><Picker onEmojiClick={onEmojiClick} /></div>}
         </div>
         
     )
