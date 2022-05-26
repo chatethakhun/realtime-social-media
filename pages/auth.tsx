@@ -49,6 +49,7 @@ const Auth = () => {
                             label="email"
                             errorMessage={errors.email}
                             icon={faUser}
+                            type='text'
                             {...register("email", { required: true })}
                         ></Input>
                         <Input id="password"
@@ -56,6 +57,7 @@ const Auth = () => {
                             label="password"
                             errorMessage={errors.password}
                             icon={faKey}
+                            type="password"
                             {...register("password", { required: true })}
                         ></Input>
                         <button

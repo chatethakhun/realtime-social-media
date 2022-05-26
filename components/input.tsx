@@ -11,6 +11,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
     placeholder?: string;
+    type: string,
     errorMessage?: FieldErrors;
     icon?: any
 }
@@ -25,6 +26,7 @@ export const Input: FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
             placeholder,
             errorMessage,
             icon,
+            type = 'text',
             ...props
         },
         ref
@@ -36,7 +38,7 @@ export const Input: FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
                         id={id}
                         ref={ref}
                         name={name}
-                        type='text'
+                        type={type}
                         aria-label={label}
                         placeholder={placeholder}
                         className={`border ${icon ? 'pr-3 pl-9' : 'px-2'} py-2 w-full focus-visible:border-teal-500 outline-none rounded`}
