@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth'
 import { useRouter } from "next/router"
 import { auth } from '../lib/firebase'
+import useToast from "./useToast"
 
 
 
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
     const [initialLoading, setInitialLoading] = useState(true)
     const [error, setError] = useState(null)
     const router = useRouter()
-
+    const { addToast } = useToast()
     
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
             router.push('/')
             setLoading(false)
         })
-            .catch((error) => {})
+            .catch((error) => addToast(error.message, { appearance: "error" }))
             .finally(() => setLoading(false))
     }
 
@@ -80,7 +81,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
             router.push('/')
             setLoading(false)
         })
-            .catch((error) => {})
+            .catch((error) => addToast(error.message, { appearance: "error" }))
             .finally(() => setLoading(false))
     }
 
@@ -90,7 +91,7 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
 
         await signOut(auth)
             .then(() => setUser(null))
-            .catch((error) => {})
+            .catch((error) => addToast(error.message, { appearance: "error" }))
             .finally(() => setLoading(false))
     }
 

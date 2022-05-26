@@ -3,7 +3,7 @@ import { PRIMARY_COLOR_CLASS } from "../constants/colors"
 interface PrimaryButtonProps {
     disabled?: boolean,
     label: string,
-    onClick: () => Promise<void>
+    onClick: () => void
 }
 const PrimaryButton = ({ disabled, label, onClick }: PrimaryButtonProps) => {
     return <button

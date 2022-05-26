@@ -1,0 +1,15 @@
+.toast_animation {
+    animation: fadeInAnimation ease 0.2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        transform: translateY(500px)
+    }
+
+    100% {
+        transform: translateY(0)
+    }
+}

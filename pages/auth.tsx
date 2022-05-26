@@ -8,7 +8,8 @@ import {
     faUser,
     faKey
 } from "@fortawesome/free-solid-svg-icons";
-import { PRIMARY_COLOR_CLASS } from "../constants/colors";
+
+
 
 interface AuthForm {
     email: string,
@@ -20,6 +21,7 @@ const Auth = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<AuthForm>();
     const [isSignInForm, setIsSignInFrom] = useState(true)
     const { signUp, signIn, loading } = useAuth()
+
     const onSubmit: SubmitHandler<AuthForm> = async ({ email, password }) => {
         if (!isSignInForm) {
             await signUp(email, password)
@@ -61,6 +63,8 @@ const Auth = () => {
                             disabled={loading === true}>
                             {isSignInForm ? 'Sign In' : 'Sign Up'}
                         </button>
+
+                        
                     </div>
 
                     <div className="flex gap-1 justify-center mb-3">
