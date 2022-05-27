@@ -15,7 +15,7 @@ interface PostProps {
 }
 
 const Post = ({ post }: PostProps) => {
-    return <div className="px-5 border-b-2 border-teal-500 py-5 flex gap-5">
+    return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex gap-2 md:gap-5">
         <ProfileImage imageUrl={post?.userImage} />
         <div className="w-full">
             <div className="flex items-center mb-5">
