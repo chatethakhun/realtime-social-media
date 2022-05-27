@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Feeds from '../components/feeds'
 import ProfileImage from '../components/profileImage'
+import styles from '../styles/pages/index.module.scss'
 
 const Home: NextPage = () => {
   const { user, logout } = useAuth()
@@ -85,7 +86,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className='container m-auto h-[100vh]'>
+      <div className={`container m-auto h-[100vh]`}>
         <div className='grid grid-cols-4 h-full'>
           <div>
             <ul>
