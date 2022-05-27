@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart } from '@fortawesome/free-solid-svg-icons'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import Image from "next/image"
 import ProfileImage from "./profileImage"
 interface PostProps {
@@ -20,7 +20,7 @@ const Post = ({ post }: PostProps) => {
         <div className="w-full">
             <div className="flex items-center mb-5">
                 <p className="text-white text-xl">{post?.userDisplayName || post?.userEmail}</p>
-                <p className="w-full text-white text-right text-sm">{moment(post?.timestamp?.toDate(), "Thailand/Bangkok").startOf('hour').fromNow()}</p>
+                <p className="w-full text-white text-right text-sm">{moment(post?.timestamp?.toDate()).fromNow()}</p>
             </div>
             {post.message && <p className="pre-line mt-2 text-white ">{post.message}</p>}
             {post.imageUrl && <div className="w-full h-[300px] relative mt-2 mb-2">
