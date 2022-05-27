@@ -100,7 +100,7 @@ const Home: NextPage = () => {
           <div className='col-span-2 pt-9 border-x-2 border-teal-500 '>
             <div className='message-form flex gap-4 px-3'>
               <ProfileImage imageUrl={user?.photoURL}/>
-              <div className='field'>
+              <div className='field w-full'>
                 <textarea name="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write Message..." className="resize-none w-full bg-transparent text-teal-500" />
                 <div className='border border-teal-500 mb-4'></div>
                 {selectedImage && <div className='mb-2 relative'>
