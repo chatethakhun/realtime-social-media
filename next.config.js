@@ -12,8 +12,10 @@ const nextConfig = {
     config.resolve.fallback = { fs: false }
 
     return config
-  }
-
+  },
+  images: {
+    domains: [ "firebasestorage.googleapis.com"],
+  },
 }
 
 module.exports = nextConfig
