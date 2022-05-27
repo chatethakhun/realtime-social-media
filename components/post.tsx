@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHeart } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faComment, faTrash } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment-timezone'
 import Image from "next/image"
 import ProfileImage from "./profileImage"
@@ -31,8 +31,13 @@ const Post = ({ post }: PostProps) => {
                     objectFit='contain'
                 /></div>}
 
-            <div className="flex gap-3 mt-5 items-center">
-                <FontAwesomeIcon icon={faHeart} className={`text-red-500 cursor-pointer`} />
+            <div className="flex gap-5 mt-5 items-center">
+                <FontAwesomeIcon icon={faHeart} className={`text-white cursor-pointer`} />
+                <FontAwesomeIcon icon={faComment} className={`text-white cursor-pointer`} />
+                <div className="w-full text-right">
+                    <FontAwesomeIcon icon={faTrash} className={`text-white cursor-pointer`} />
+                </div>
+
             </div>
         </div>
 
