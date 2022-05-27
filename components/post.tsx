@@ -2,20 +2,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import Image from "next/image"
+import ProfileImage from "./profileImage"
 interface PostProps {
     post: {
         userDisplayName: string,
         userEmail: string,
         message: string,
         timestamp: any,
-        imageUrl: string
+        imageUrl: string,
+        userImage: string
     }
 }
 
 const Post = ({ post }: PostProps) => {
-    return <div>
-        <div>
-            <div className="flex items-center">
+    return <div className="px-5 border-b-2 border-teal-500 py-5 flex gap-5">
+        <ProfileImage imageUrl={post?.userImage} />
+        <div className="w-full">
+            <div className="flex items-center mb-5">
                 <p className="text-white text-xl">{post?.userDisplayName || post?.userEmail}</p>
                 <p className="w-full text-white text-right text-sm">{moment(post?.timestamp?.toDate()).startOf('hour').fromNow()}</p>
             </div>
@@ -27,11 +30,12 @@ const Post = ({ post }: PostProps) => {
                     layout="fill"
                     objectFit='contain'
                 /></div>}
+
+            <div className="flex gap-3 mt-5 items-center">
+                <FontAwesomeIcon icon={faHeart} className={`text-red-500 cursor-pointer`} />
+            </div>
         </div>
-        <div className='border border-teal-500 mt-2'></div>
-        <div className="flex gap-3 mt-2 items-center">
-            <FontAwesomeIcon icon={faHeart} className={`text-red-500 cursor-pointer`} />
-        </div>
+
     </div>
 }
 export default Post

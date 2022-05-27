@@ -16,6 +16,7 @@ import {
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import Feeds from '../components/feeds'
+import ProfileImage from '../components/profileImage'
 
 const Home: NextPage = () => {
   const { user, logout } = useAuth()
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string>('')
   const { addToast } = useToast()
-  
+
 
   const sendPost = async () => {
     setLoading(true)
@@ -96,28 +97,32 @@ const Home: NextPage = () => {
               await logout()
             }}>Logout</button>}
           </div>
-          <div className='col-span-2 mt-9'>
-            <div className='message-form'>
-              <textarea name="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write Message..." className="resize-none w-full bg-transparent text-teal-500" />
-              <div className='border border-teal-500 mb-4'></div>
-              {selectedImage && <div className='mb-2 relative'>
-                <img src={selectedImage}></img>
-                <FontAwesomeIcon icon={faTimes}  className="absolute top-[10px] right-[10px] cursor-pointer bg-white p-1 rounded-full w-[1em] h-[1em]" onClick={removeSelectedImage}/>
-              </div>}
-              <div className='flex items-center'>
-                <div className='basis-3/4 flex gap-5'>
-                  <EmojiPicker onEmojiClick={selectEmoji} />
-                  <ImagePicker name='image' onSelected={handleImageSelect} />
-                </div>
-                <div className='basis-1/4 text-center'>
-                  <button onClick={sendPost} disabled={!message && !selectedImage} className="border rounded border-teal-500 px-3 py-1 ml-auto w-[100px] flex justify-center text-teal-500 disabled:border-teal-200 disabled:text-teal-200 cursor-pointer">
-                    { !loading ? 'Post' : <Loading />}
-                  </button>
+          <div className='col-span-2 pt-9 border-x-2 border-teal-500 '>
+            <div className='message-form flex gap-4 px-3'>
+              <ProfileImage imageUrl={user?.photoURL}/>
+              <div className='field'>
+                <textarea name="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write Message..." className="resize-none w-full bg-transparent text-teal-500" />
+                <div className='border border-teal-500 mb-4'></div>
+                {selectedImage && <div className='mb-2 relative'>
+                  <img src={selectedImage}></img>
+                  <FontAwesomeIcon icon={faTimes} className="absolute top-[10px] right-[10px] cursor-pointer bg-white p-1 rounded-full w-[1em] h-[1em]" onClick={removeSelectedImage} />
+                </div>}
+                <div className='flex items-center'>
+                  <div className='basis-3/4 flex gap-5'>
+                    <EmojiPicker onEmojiClick={selectEmoji} />
+                    <ImagePicker name='image' onSelected={handleImageSelect} />
+                  </div>
+                  <div className='basis-1/4 text-center'>
+                    <button onClick={sendPost} disabled={!message && !selectedImage} className="border rounded border-teal-500 px-3 py-1 ml-auto w-[100px] flex justify-center text-teal-500 disabled:border-teal-200 disabled:text-teal-200 cursor-pointer">
+                      {!loading ? 'Post' : <Loading />}
+                    </button>
+                  </div>
                 </div>
               </div>
+
             </div>
             <div className='border border-teal-500 mb-4 mt-4'></div>
-            
+
 
             <Feeds />
 
