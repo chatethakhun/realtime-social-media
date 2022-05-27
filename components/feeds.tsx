@@ -24,7 +24,7 @@ const Feeds = () => {
         {!loading ? <div className='feed-container grid'>
             {posts && posts.length ?
                 posts.map((post: any) => <Post key={post.id} post={post.data()} />)
-                : <div className="text-center">No posts.</div>}
+                : <div className="text-center text-white">No posts.</div>}
         </div> : <div className="mt-5 flex justify-center"><Loading /></div>}
     </div>
 }

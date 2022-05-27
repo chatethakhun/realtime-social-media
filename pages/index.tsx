@@ -85,8 +85,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className='container m-auto'>
-        <div className='grid grid-cols-4'>
+      <div className='container m-auto h-[100vh]'>
+        <div className='grid grid-cols-4 h-full'>
           <div>
             <ul>
               <li>
@@ -122,10 +122,7 @@ const Home: NextPage = () => {
 
             </div>
             <div className='border border-teal-500 mb-4 mt-4'></div>
-
-
             <Feeds />
-
           </div>
           <div>
             Right bar
