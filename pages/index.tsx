@@ -18,6 +18,7 @@ import {
 import Feeds from '../components/feeds'
 import ProfileImage from '../components/profileImage'
 import styles from '../styles/pages/index.module.scss'
+import LeftBar from '../components/leftbar'
 
 const Home: NextPage = () => {
   const { user, logout } = useAuth()
@@ -87,20 +88,15 @@ const Home: NextPage = () => {
       </Head>
 
       <div className={`container m-auto h-[100vh]`}>
-        <div className='grid grid-cols-4 h-full'>
-          <div>
-            <ul>
-              <li>
-                <Link href={'/'}>Home</Link>
-              </li>
-            </ul>
-            {user && <button onClick={async () => {
-              await logout()
-            }}>Logout</button>}
+        <div className='flex'>
+          
+          <div className='hidden md:block md:w-[50px]  lg:w-[100px]'>
+            <LeftBar />
           </div>
-          <div className='col-span-2 pt-9 border-x-2 border-teal-500 '>
+
+          <div className='pt-9 border-x-2 border-teal-500 w-[100%] '>
             <div className='message-form flex gap-4 px-3'>
-              <ProfileImage imageUrl={user?.photoURL}/>
+              <ProfileImage imageUrl={user?.photoURL} />
               <div className='field w-full'>
                 <textarea name="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write Message..." className="resize-none w-full bg-transparent text-teal-500" />
                 <div className='border border-teal-500 mb-4'></div>
@@ -124,9 +120,6 @@ const Home: NextPage = () => {
             </div>
             <div className='border border-teal-500 mb-4 mt-4'></div>
             <Feeds />
-          </div>
-          <div>
-            Right bar
           </div>
         </div>
       </div>
