@@ -1,5 +1,5 @@
 
-import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData, startAfter } from "firebase/firestore"
+import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData, startAfter, onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { db } from "../lib/firebase"
@@ -20,29 +20,24 @@ const Feeds = () => {
         userImage: string
     }>>([])
     const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>()
-    const [isLoading, setIsLoading] = useState(false)
     const [hasMore, sethasMore] = useState(true);
 
-
     useEffect(() => {
-        const getPosts = async () => {
-            setIsLoading(true)
-            const q = query(collection(db, "posts"), orderBy('timestamp', 'desc'), limit(LIMIT));
-            const querySnapshot = await getDocs(q);
-            console.log(querySnapshot.docs.length)
-
-            setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1])
-            
-
-            const posts = [] as any
-
-            querySnapshot.forEach(snapshot => posts.push({ ...snapshot.data() }))
-            setPosts(posts)
-            setIsLoading(false)
+        const unsubscribe = onSnapshot(
+        query(collection(db, "posts"), orderBy("timestamp", "desc")),
+        (snapshot) => {
+            const newPost = [] as any
+            console.log(snapshot.docs[0].data())
+            snapshot.docs.forEach(snapshot => newPost.push({ ...snapshot.data() }))
+            setPosts(newPost)
         }
+        );
 
-        getPosts()}
-        , [])
+        return () => {
+        unsubscribe();
+        };
+    }, [db]);
+
 
     const fetchPost = async () => {
         const next = query(collection(db, "posts"),
