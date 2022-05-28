@@ -23,14 +23,16 @@ const Feeds = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [hasMore, sethasMore] = useState(true);
 
-    const [page, setpage] = useState(2);
+
     useEffect(() => {
         const getPosts = async () => {
             setIsLoading(true)
             const q = query(collection(db, "posts"), orderBy('timestamp', 'desc'), limit(LIMIT));
             const querySnapshot = await getDocs(q);
 
+            if(querySnapshot.docs.length > LIMIT)  {
             setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1])
+            }
 
             const posts = [] as any
 
@@ -43,8 +45,6 @@ const Feeds = () => {
         , [])
 
     const fetchPost = async () => {
-        const allDocs = query(collection(db, "posts"), orderBy('timestamp', 'desc'));
-
         const next = query(collection(db, "posts"),
             orderBy('timestamp', 'desc'),
             startAt(lastDoc || 0),
@@ -81,7 +81,6 @@ const Feeds = () => {
                 next={fetchMoreData}
                 hasMore={hasMore}
                 loader={<div className="flex justify-center mt-3 "><Loading /></div>}
-
             >
                 {posts.map(post => <Post post={post} key={post.id} />)}
             </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>}
