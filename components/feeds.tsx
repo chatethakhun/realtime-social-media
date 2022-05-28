@@ -1,31 +1,91 @@
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore"
+
+import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData } from "firebase/firestore"
 import { useEffect, useState } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
 import { db } from "../lib/firebase"
 import Loading from "./loading"
 import Post from "./post"
 
+
+const LIMIT = 10
+
 const Feeds = () => {
-    const [posts, setPosts] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [posts, setPosts] = useState<Array<{
+        id: string,
+        userDisplayName: string,
+        userEmail: string,
+        message: string,
+        timestamp: any,
+        imageUrl: string,
+        userImage: string
+    }>>([])
+    const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>()
+    const [isLoading, setIsLoading] = useState(false)
+    const [hasMore, sethasMore] = useState(true);
 
-    useEffect(() => onSnapshot(
-        query(collection(db, "posts"), orderBy('timestamp', 'desc')),
-        (snapshot) => {
-            const posts = snapshot.docs as []
+    const [page, setpage] = useState(2);
+    useEffect(() => {
+        const getPosts = async () => {
+            setIsLoading(true)
+            const q = query(collection(db, "posts"), orderBy('timestamp', 'desc'), limit(LIMIT));
+            const querySnapshot = await getDocs(q);
+
+            setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1])
+
+            const posts = [] as any
+
+            querySnapshot.forEach(snapshot => posts.push({ ...snapshot.data() }))
             setPosts(posts)
-            setLoading(false)
+            setIsLoading(false)
         }
-    )
-        , [db])
 
+        getPosts()}
+        , [])
+
+    const fetchPost = async () => {
+        const allDocs = query(collection(db, "posts"), orderBy('timestamp', 'desc'));
+
+        const next = query(collection(db, "posts"),
+            orderBy('timestamp', 'desc'),
+            startAt(lastDoc || 0),
+            limit(LIMIT));
+
+        const nextdocumentSnapshots = await getDocs(next);
+        const newPost = [] as any
+
+        nextdocumentSnapshots.forEach(snapshot => newPost.push({ ...snapshot.data() }))
+
+        setLastDoc(nextdocumentSnapshots.docs[nextdocumentSnapshots.docs.length - 1])
+
+
+        return newPost
+    }
+
+    const fetchMoreData = async () => {
+        const postFromServer = await fetchPost()
+        console.log(postFromServer);
+
+
+        if (postFromServer.length == 0 || postFromServer.length < LIMIT) {
+            sethasMore(false)
+        }
+
+        setPosts(posts => [...posts, ...postFromServer])
+    }
 
     return <div className=''>
         <h1 className='text-2xl text-teal-500 px-3'>New Feeds</h1>
-        {!loading ? <div className='feed-container grid'>
-            {posts && posts.length ?
-                posts.map((post: any) => <Post key={post.id} post={post.data()} />)
-                : <div className="text-center text-white">No posts.</div>}
-        </div> : <div className="mt-5 flex justify-center"><Loading /></div>}
+        <div className='feed-container grid'>
+            {posts.length > 0 ? <InfiniteScroll
+                dataLength={posts.length} //This is important field to render the next data
+                next={fetchMoreData}
+                hasMore={hasMore}
+                loader={<div className="flex justify-center mt-3 "><Loading /></div>}
+
+            >
+                {posts.map(post => <Post post={post} key={post.id} />)}
+            </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>}
+        </div>
     </div>
 }
 

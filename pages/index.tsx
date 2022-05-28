@@ -88,7 +88,7 @@ const Home: NextPage = () => {
       </Head>
 
       <div className={`container m-auto h-[100vh]`}>
-        <div className='flex'>
+        <div className='flex h-full'>
           
           <div className='hidden md:block md:w-[50px]  lg:w-[100px]'>
             <LeftBar />
