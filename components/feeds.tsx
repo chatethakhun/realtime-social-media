@@ -21,17 +21,19 @@ const Feeds = () => {
     }>>([])
     const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>()
     const [hasMore, sethasMore] = useState(true);
+    const [loadingPage, setLoadingPage] = useState(true)
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
-        query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(LIMIT)),
-        (snapshot) => {
-            const newPost = [] as any
-            snapshot.docs.forEach(snapshot => newPost.push({ ...snapshot.data() }))
-            setPosts(newPost)
-            setLastDoc(snapshot.docs[snapshot.docs.length - 1])
-            sethasMore(true)
-        }
+            query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(LIMIT)),
+            (snapshot) => {
+                const newPost = [] as any
+                snapshot.docs.forEach(snapshot => newPost.push({ ...snapshot.data() }))
+                setPosts(newPost)
+                setLastDoc(snapshot.docs[snapshot.docs.length - 1])
+                sethasMore(true)
+                setLoadingPage(false)
+            }
         );
 
         return () => {
@@ -45,7 +47,7 @@ const Feeds = () => {
             orderBy('timestamp', 'desc'),
             startAfter(lastDoc || 0),
             limit(LIMIT));
-        
+
         const nextdocumentSnapshots = await getDocs(next);
         const newPost = [] as any
 
@@ -64,22 +66,33 @@ const Feeds = () => {
             sethasMore(false)
         }
 
-        
+
     }
+
+    const renderFeeds = () => {
+        if(loadingPage) {
+            return <div className="flex justify-center mt-3 "><Loading /></div>
+        }
+
+        return posts.length > 0 ? <InfiniteScroll
+            dataLength={posts.length} //This is important field to render the next data
+            next={fetchMoreData}
+            hasMore={hasMore}
+            loader={<div className="flex justify-center mt-3 "><Loading /></div>}
+        >
+            {posts.map(post => <Post post={post} key={post.id} />)}
+        </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>
+    }
+
 
     return <div className=''>
         <h1 className='text-2xl text-teal-500 px-3'>New Feeds</h1>
-            <div className='feed-container grid'>
-                {posts.length > 0 ? <InfiniteScroll
-                    dataLength={posts.length} //This is important field to render the next data
-                    next={fetchMoreData}
-                    hasMore={hasMore}
-                    loader={<div className="flex justify-center mt-3 "><Loading /></div>}
-                >
-                    {posts.map(post => <Post post={post} key={post.id} />)}
-                </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>}
-            </div>
+        <div className='feed-container grid'>
+            {renderFeeds()}
+        </div>
     </div>
+
+
 }
 
 export default Feeds
