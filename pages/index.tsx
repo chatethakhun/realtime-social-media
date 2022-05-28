@@ -87,7 +87,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className={`container m-auto h-[100vh]`}>
+      <div className={`container m-auto`}>
         <div className='flex h-full'>
           
           <div className='hidden md:block md:w-[50px]  lg:w-[100px]'>
