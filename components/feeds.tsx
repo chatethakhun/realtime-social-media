@@ -1,5 +1,5 @@
 
-import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData } from "firebase/firestore"
+import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData, startAfter } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { db } from "../lib/firebase"
@@ -29,10 +29,10 @@ const Feeds = () => {
             setIsLoading(true)
             const q = query(collection(db, "posts"), orderBy('timestamp', 'desc'), limit(LIMIT));
             const querySnapshot = await getDocs(q);
+            console.log(querySnapshot.docs.length)
 
-            if(querySnapshot.docs.length > LIMIT)  {
             setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1])
-            }
+            
 
             const posts = [] as any
 
@@ -47,7 +47,7 @@ const Feeds = () => {
     const fetchPost = async () => {
         const next = query(collection(db, "posts"),
             orderBy('timestamp', 'desc'),
-            startAt(lastDoc || 0),
+            startAfter(lastDoc || 0),
             limit(LIMIT));
 
         const nextdocumentSnapshots = await getDocs(next);
@@ -63,26 +63,26 @@ const Feeds = () => {
 
     const fetchMoreData = async () => {
         const postFromServer = await fetchPost()
-
+        setPosts([...posts, ...postFromServer])
         if (postFromServer.length == 0 || postFromServer.length < LIMIT) {
             sethasMore(false)
         }
 
-        setPosts(posts => [...posts, ...postFromServer])
+        
     }
 
     return <div className=''>
         <h1 className='text-2xl text-teal-500 px-3'>New Feeds</h1>
-        <div className='feed-container grid'>
-            {posts.length > 0 ? <InfiniteScroll
-                dataLength={posts.length} //This is important field to render the next data
-                next={fetchMoreData}
-                hasMore={hasMore}
-                loader={<div className="flex justify-center mt-3 "><Loading /></div>}
-            >
-                {posts.map(post => <Post post={post} key={post.id} />)}
-            </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>}
-        </div>
+            <div className='feed-container grid'>
+                {posts.length > 0 ? <InfiniteScroll
+                    dataLength={posts.length} //This is important field to render the next data
+                    next={fetchMoreData}
+                    hasMore={hasMore}
+                    loader={<div className="flex justify-center mt-3 "><Loading /></div>}
+                >
+                    {posts.map(post => <Post post={post} key={post.id} />)}
+                </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>}
+            </div>
     </div>
 }
 
