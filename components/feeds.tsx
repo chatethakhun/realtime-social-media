@@ -24,17 +24,18 @@ const Feeds = () => {
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
-        query(collection(db, "posts"), orderBy("timestamp", "desc")),
+        query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(LIMIT)),
         (snapshot) => {
             const newPost = [] as any
-            console.log(snapshot.docs[0].data())
             snapshot.docs.forEach(snapshot => newPost.push({ ...snapshot.data() }))
             setPosts(newPost)
+            setLastDoc(snapshot.docs[snapshot.docs.length - 1])
+            sethasMore(true)
         }
         );
 
         return () => {
-        unsubscribe();
+            unsubscribe();
         };
     }, [db]);
 
@@ -44,7 +45,7 @@ const Feeds = () => {
             orderBy('timestamp', 'desc'),
             startAfter(lastDoc || 0),
             limit(LIMIT));
-
+        
         const nextdocumentSnapshots = await getDocs(next);
         const newPost = [] as any
 
