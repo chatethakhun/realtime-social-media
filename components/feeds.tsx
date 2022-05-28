@@ -63,8 +63,6 @@ const Feeds = () => {
 
     const fetchMoreData = async () => {
         const postFromServer = await fetchPost()
-        console.log(postFromServer);
-
 
         if (postFromServer.length == 0 || postFromServer.length < LIMIT) {
             sethasMore(false)
