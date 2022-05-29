@@ -3,7 +3,6 @@ import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/fi
 import { getDownloadURL, ref, uploadString } from 'firebase/storage'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import { db, storage } from '../lib/firebase'
@@ -17,8 +16,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Feeds from '../components/feeds'
 import ProfileImage from '../components/profileImage'
-import styles from '../styles/pages/index.module.scss'
-import LeftBar from '../components/leftbar'
 import Container from '../components/container'
 
 const Home: NextPage = () => {

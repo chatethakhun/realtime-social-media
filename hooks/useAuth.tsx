@@ -50,13 +50,11 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 setUser(user)
-                setLoading(false)
             } else {
                 setUser(null)
-                setLoading(false)
                 router.push('/auth')
             }
-
+            setLoading(false)
             setInitialLoading(false)
         })
     }, [auth])
