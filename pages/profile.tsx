@@ -70,7 +70,7 @@ const Profile = () => {
 
         <div className="mt-10">
             
-            <div className="form-group w-2/4 m-aut">
+            <div className="form-group w-2/4 m-auto">
                 <label htmlFor="displayName" className="text-white">Display Name</label>
                 <Input name="displayName" label="displayName" id="displayName" type="text" value={userDisplayName as string} onChange={(e) => setUserDisplayName(e.target.value)}/>
             </div>
