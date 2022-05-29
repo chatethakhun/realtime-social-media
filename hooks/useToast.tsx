@@ -52,7 +52,7 @@ export const ToastProvider = ({ children, autoRemoveToast = true }: ToastProvide
         value={{ addToast }}>
         {children}
         {
-            <div className="toast-container absolute bottom-[10px] left-2/4 translate-x-[-50%] ">
+            <div className="toast-container fixed bottom-[10px] left-2/4 translate-x-[-50%] ">
                 {toasts.map(toast =>
                     <div className={`${style.toast_animation} px-4 py-3 min-w-[200px] border rounded ${toast.option.appearance === 'error' ? error : notice} text-center mb-3 transition ease-in-out translate-y-[0]`} key={toast.id}>{toast.message}</div>)}
             </div>

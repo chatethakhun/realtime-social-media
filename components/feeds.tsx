@@ -1,7 +1,8 @@
 
-import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData, startAfter, onSnapshot } from "firebase/firestore"
+import { collection, orderBy, query, limit, getDocs, startAt, QueryDocumentSnapshot, DocumentData, startAfter, onSnapshot, deleteDoc, doc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
+import useToast from "../hooks/useToast"
 import { db } from "../lib/firebase"
 import Loading from "./loading"
 import Post from "./post"
@@ -22,13 +23,13 @@ const Feeds = () => {
     const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>()
     const [hasMore, sethasMore] = useState(true);
     const [loadingPage, setLoadingPage] = useState(true)
-
+    const { addToast } = useToast()
     useEffect(() => {
         const unsubscribe = onSnapshot(
             query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(LIMIT)),
             (snapshot) => {
                 const newPost = [] as any
-                snapshot.docs.forEach(snapshot => newPost.push({ ...snapshot.data() }))
+                snapshot.docs.forEach(snapshot => newPost.push({ ...snapshot.data(), id: snapshot.id }))
                 setPosts(newPost)
                 setLastDoc(snapshot.docs[snapshot.docs.length - 1])
                 sethasMore(true)
@@ -51,7 +52,7 @@ const Feeds = () => {
         const nextdocumentSnapshots = await getDocs(next);
         const newPost = [] as any
 
-        nextdocumentSnapshots.forEach(snapshot => newPost.push({ ...snapshot.data() }))
+        nextdocumentSnapshots.forEach(snapshot => newPost.push({ ...snapshot.data(), id: snapshot.id }))
 
         setLastDoc(nextdocumentSnapshots.docs[nextdocumentSnapshots.docs.length - 1])
 
@@ -69,6 +70,15 @@ const Feeds = () => {
 
     }
 
+    const deletePost = async (post: Post) => {
+        try {
+            await deleteDoc(doc(db, 'posts', post.id))
+            addToast('Delete post successfully', { appearance: 'notice'})
+        } catch(error) {
+            addToast('Cannot delete post', { appearance: 'error'})
+        }
+    }
+
     const renderFeeds = () => {
         if(loadingPage) {
             return <div className="flex justify-center mt-3 "><Loading /></div>
@@ -80,7 +90,7 @@ const Feeds = () => {
             hasMore={hasMore}
             loader={<div className="flex justify-center mt-3 "><Loading /></div>}
         >
-            {posts.map(post => <Post post={post} key={post.id} />)}
+            {posts.map(post => <Post post={post} key={post.id} onDeletePost={deletePost} />)}
         </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>
     }
 
