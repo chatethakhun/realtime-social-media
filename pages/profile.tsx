@@ -1,5 +1,5 @@
 
-import { updateProfile } from "firebase/auth"
+import { updateProfile, User } from "firebase/auth"
 import { ChangeEvent, useEffect, useState } from "react"
 import Container from "../components/container"
 import { Input } from "../components/input"
@@ -46,7 +46,7 @@ const Profile = () => {
 
         
 
-        updateProfile(auth.currentUser, data)
+        updateProfile(auth.currentUser as User, data)
 
         .then(() => {
             addToast('Update Successfully', { appearance: 'notice'})
