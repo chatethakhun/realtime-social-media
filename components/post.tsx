@@ -4,6 +4,7 @@ import moment from 'moment-timezone'
 import Image from "next/image"
 import ProfileImage from "./profileImage"
 import useConfrim from "../hooks/useConfirm"
+import useAuth from "../hooks/useAuth"
 
 
 interface Post {
@@ -13,7 +14,8 @@ interface Post {
     message: string,
     timestamp: any,
     imageUrl: string,
-    userImage: string
+    userImage: string,
+    userId: string
 }
 interface PostProps {
     post: Post,
@@ -22,6 +24,8 @@ interface PostProps {
 
 const Post = ({ post, onDeletePost }: PostProps) => {
     const { confirm } = useConfrim()
+    const { user } = useAuth()
+    
     return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex gap-2 md:gap-5">
         <ProfileImage imageUrl={post?.userImage} />
         <div className="w-full">
@@ -41,16 +45,17 @@ const Post = ({ post, onDeletePost }: PostProps) => {
             <div className="flex gap-5 mt-5 items-center">
                 <FontAwesomeIcon icon={faHeart} className={`text-white cursor-pointer`} />
                 <FontAwesomeIcon icon={faComment} className={`text-white cursor-pointer`} />
-                <div className="w-full text-right">
-                    <FontAwesomeIcon icon={faTrash} className={`text-white cursor-pointer`} onClick={async () => {
-                        const isConfirm = await confirm('Delete post?')
-                        if(isConfirm) {
-                            onDeletePost(post)
+                { post.userId === user?.uid &&
+                    <div className="w-full text-right">
+                        <FontAwesomeIcon icon={faTrash} className={`text-white cursor-pointer`} onClick={async () => {
+                            const isConfirm = await confirm('Delete post?')
+                            if(isConfirm) {
+                                onDeletePost(post)
+                            }
                         }
-                    }
-                        } />
-                </div>
-
+                            } />
+                    </div>
+                }
             </div>
         </div>
 

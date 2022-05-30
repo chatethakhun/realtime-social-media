@@ -10,7 +10,7 @@ import Loading from "./loading"
 import Post from "./post"
 
 
-const LIMIT = 5
+const LIMIT = 10
 const Feeds = () => {
     const [posts, setPosts] = useState<Array<{
         id: string,
@@ -19,7 +19,8 @@ const Feeds = () => {
         message: string,
         timestamp: any,
         imageUrl: string,
-        userImage: string
+        userImage: string,
+        userId: string
     }>>([])
     const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>()
     const [hasMore, sethasMore] = useState(true);
@@ -98,14 +99,15 @@ const Feeds = () => {
     const getPostWithFormat = async (postDoc: DocumentData) => {
         const tempPost = await Promise.all(postDoc.map(async (document: DocumentData) => {
             const snap = await getDoc(doc(db, 'users', document.data().userId))
-            const book = {
+            
+            const post = {
                 id: document.id,
-                userdisplayName: snap.data()?.displayName,
+                userDisplayName: snap.data()?.displayName,
                 userImage: snap.data()?.photoURL,
-                userEmail: snap.data()?.displayName,
-                ...document.data()
+                userEmail: snap.data()?.email,
+                ...document.data(),
             }
-            return book
+            return post
           }));
         return tempPost  
     }
