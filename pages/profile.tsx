@@ -29,7 +29,7 @@ const Profile = () => {
         let downloadUrl 
 
         if (isChangeImage) {
-            const imageRef = ref(storage, `users/image`)
+            const imageRef = ref(storage, `users/${user?.uid}/image`)
             await uploadString(imageRef, imageProfile, 'data_url')
               .then(async () => {
                 downloadUrl = await getDownloadURL(imageRef)

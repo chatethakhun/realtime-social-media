@@ -10,8 +10,9 @@ import {
     User
 } from 'firebase/auth'
 import { useRouter } from "next/router"
-import { auth } from '../lib/firebase'
+import { auth, db } from '../lib/firebase'
 import useToast from "./useToast"
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"
 
 
 
@@ -59,10 +60,18 @@ export const AuthProvider = ({ children }: AuthProvierProps) => {
         })
     }, [auth])
 
+    const createUser = async (user: User) => {
+        const userRef = doc(db, "users" , user.uid);
+        await setDoc(userRef, {
+            email: user.email
+        })
+    }
+
     const signUp = async (email: string, password: string) => {
         setLoading(true)
         
         await createUserWithEmailAndPassword(auth, email, password).then((useCredential) => {
+            createUser(useCredential.user)
             setUser(useCredential.user)
             router.push('/')
             setLoading(false)

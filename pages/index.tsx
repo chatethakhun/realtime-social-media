@@ -29,12 +29,10 @@ const Home: NextPage = () => {
   const sendPost = async () => {
     setLoading(true)
 
-    const docRef = await addDoc(collection(db, 'posts'), {
+    const docRef = await addDoc(collection(db, `posts`), {
       message,
       timestamp: serverTimestamp(),
-      userImage: user?.photoURL,
-      userEmail: user?.email,
-      userDisplayName: user?.displayName
+      userId: user?.uid
     })
 
     if (selectedImage) {
