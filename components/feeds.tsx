@@ -1,4 +1,5 @@
 
+import { async } from "@firebase/util"
 import { collection, orderBy, query, limit, getDocs, QueryDocumentSnapshot, DocumentData, startAfter, onSnapshot, deleteDoc, doc, where, getDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
@@ -9,8 +10,7 @@ import Loading from "./loading"
 import Post from "./post"
 
 
-const LIMIT = 10
-
+const LIMIT = 5
 const Feeds = () => {
     const [posts, setPosts] = useState<Array<{
         id: string,
@@ -29,8 +29,9 @@ const Feeds = () => {
     useEffect(() => {
         const unsubscribe = onSnapshot(
             query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(LIMIT)),
-            (snapshot) => {
-                setPostWithFormat(snapshot.docs)
+            async (snapshot) => {
+                const newPost = await getPostWithFormat(snapshot.docs)
+                setPosts(newPost)
                 setLastDoc(snapshot.docs[snapshot.docs.length - 1])
                 sethasMore(true)
                 setLoadingPage(false)
@@ -50,18 +51,15 @@ const Feeds = () => {
             limit(LIMIT));
 
         const nextdocumentSnapshots = await getDocs(next);
-        const newPost = [] as any
-
-        nextdocumentSnapshots.forEach(snapshot => newPost.push({ ...snapshot.data(), id: snapshot.id }))
+        const newPost = await getPostWithFormat(nextdocumentSnapshots.docs)
 
         setLastDoc(nextdocumentSnapshots.docs[nextdocumentSnapshots.docs.length - 1])
-
-
         return newPost
     }
 
     const fetchMoreData = async () => {
         const postFromServer = await fetchPost()
+    
         setPosts([...posts, ...postFromServer])
         if (postFromServer.length == 0 || postFromServer.length < LIMIT) {
             sethasMore(false)
@@ -71,10 +69,12 @@ const Feeds = () => {
     }
 
     const deletePost = async (post: Post) => {
+
         try {
             await deleteDoc(doc(db, 'posts', post.id))
             addToast('Delete post successfully', { appearance: 'notice' })
         } catch (error) {
+            console.log(error)
             addToast('Cannot delete post', { appearance: 'error' })
         }
     }
@@ -95,26 +95,20 @@ const Feeds = () => {
         </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>
     }
 
-    const setPostWithFormat = (postDoc: DocumentData) => {
-        const newPost = [] as any
-
-        postDoc.forEach(async (postDoc: DocumentData) => {
-            const snap = await getDoc(doc(db, 'users', postDoc.data().userId))    
-            newPost.push({
-                message: postDoc.data().message,
-                userEmail: snap.data()?.email,
-                userDisplayName: snap.data()?.displayName,
+    const getPostWithFormat = async (postDoc: DocumentData) => {
+        const tempPost = await Promise.all(postDoc.map(async (document: DocumentData) => {
+            const snap = await getDoc(doc(db, 'users', document.data().userId))
+            const book = {
+                id: document.id,
+                userdisplayName: snap.data()?.displayName,
                 userImage: snap.data()?.photoURL,
-                ...postDoc.data()
-            })
-
-            setPosts(newPost)
-        })        
-
-        
-        
+                userEmail: snap.data()?.displayName,
+                ...document.data()
+            }
+            return book
+          }));
+        return tempPost  
     }
-
 
     return <div className=''>
         <h1 className='text-2xl text-teal-500 px-3'>New Feeds</h1>
