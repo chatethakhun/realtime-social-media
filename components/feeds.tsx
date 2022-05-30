@@ -97,7 +97,7 @@ const Feeds = () => {
 
     const setPostWithFormat = (postDoc: DocumentData) => {
         const newPost = [] as any
-        console.log(postDoc);
+
         postDoc.forEach(async (postDoc: DocumentData) => {
             const snap = await getDoc(doc(db, 'users', postDoc.data().userId))    
             newPost.push({

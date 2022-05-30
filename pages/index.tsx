@@ -37,7 +37,7 @@ const Home: NextPage = () => {
 
     if (selectedImage) {
       const imageRef = ref(storage, `posts/${docRef.id}/image`)
-      console.log(selectedImage)
+
       await uploadString(imageRef, selectedImage, 'data_url')
         .then(async () => {
           const downloadUrl = await getDownloadURL(imageRef)
