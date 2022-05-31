@@ -1,30 +1,24 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHeart, faComment, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faThumbsUp, faComment, faTrash } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment-timezone'
 import Image from "next/image"
 import ProfileImage from "./profileImage"
 import useConfrim from "../hooks/useConfirm"
 import useAuth from "../hooks/useAuth"
+import { PostType } from "../types/post"
+import { useState } from "react"
 
 
-interface Post {
-    id: string, 
-    userDisplayName: string,
-    userEmail: string,
-    message: string,
-    timestamp: any,
-    imageUrl: string,
-    userImage: string,
-    userId: string
-}
 interface PostProps {
-    post: Post,
-    onDeletePost: (post: Post) => void
+    post: PostType,
+    onDeletePost: (post: PostType) => void,
+    onLikePost: (post: PostType) => void
 }
 
-const Post = ({ post, onDeletePost }: PostProps) => {
+const Post = ({ post, onDeletePost, onLikePost }: PostProps) => {
     const { confirm } = useConfrim()
     const { user } = useAuth()
+    const [liked, setLiked ] = useState(post.isLiked)
     
     return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex gap-2 md:gap-5">
         <ProfileImage imageUrl={post?.userImage} />
@@ -43,7 +37,9 @@ const Post = ({ post, onDeletePost }: PostProps) => {
                 /></div>}
 
             <div className="flex gap-5 mt-5 items-center">
-                <FontAwesomeIcon icon={faHeart} className={`text-white cursor-pointer`} />
+                <FontAwesomeIcon icon={faThumbsUp} className={`text-white cursor-pointer ${liked ? 'text-teal-500' : ''}`} onClick={() => {
+                    setLiked(!liked)
+                    onLikePost(post)}}/>
                 <FontAwesomeIcon icon={faComment} className={`text-white cursor-pointer`} />
                 { post.userId === user?.uid &&
                     <div className="w-full text-right">
@@ -62,3 +58,5 @@ const Post = ({ post, onDeletePost }: PostProps) => {
     </div>
 }
 export default Post
+
+export { PostType }
