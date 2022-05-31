@@ -1,11 +1,12 @@
 
 import { async } from "@firebase/util"
 import { collection, orderBy, query, limit, getDocs, QueryDocumentSnapshot, DocumentData, startAfter, onSnapshot, deleteDoc, doc, where, getDoc } from "firebase/firestore"
+import { deleteObject, ref } from "firebase/storage"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import useAuth from "../hooks/useAuth"
 import useToast from "../hooks/useToast"
-import { db } from "../lib/firebase"
+import { db, storage } from "../lib/firebase"
 import Loading from "./loading"
 import Post from "./post"
 
@@ -72,7 +73,13 @@ const Feeds = () => {
     const deletePost = async (post: Post) => {
 
         try {
+            
             await deleteDoc(doc(db, 'posts', post.id))
+            if(post.imageUrl)  {
+                const postImageRef = ref(storage, post.imageUrl)
+                await deleteObject(postImageRef)
+            }
+
             addToast('Delete post successfully', { appearance: 'notice' })
         } catch (error) {
             console.log(error)
