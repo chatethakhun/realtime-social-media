@@ -5,98 +5,28 @@ import { deleteObject, ref } from "firebase/storage"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import useAuth from "../hooks/useAuth"
+import usePost from "../hooks/usePost"
 import useToast from "../hooks/useToast"
 import { db, storage } from "../lib/firebase"
 import Loading from "./loading"
-import Post, { PostType } from "./post"
+import { PostType } from "../types/post"
+import Post from "./post"
 
 
 const LIMIT = 10
 const Feeds = () => {
-    const [posts, setPosts] = useState<Array<PostType>>([])
-    const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>()
-    const [hasMore, sethasMore] = useState(true);
-    const [loadingPage, setLoadingPage] = useState(true)
     const { addToast } = useToast()
     const { user } = useAuth()
-    useEffect(() => {
-        const unsubscribe = onSnapshot(
-            query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(LIMIT)),
-            async (snapshot) => {
-                const newPost = await getPostWithFormat(snapshot.docs)
-                setPosts(newPost)
-                setLastDoc(snapshot.docs[snapshot.docs.length - 1])
-                sethasMore(true)
-                setLoadingPage(false)
-            }
-        );
+    const { posts, loading, fetchMoreData, hasMore  } = usePost()
 
-        return () => {
-            unsubscribe();
-        };
-    }, [db]);
+    
 
-
-    const fetchPost = async () => {
-        const next = query(collection(db, "posts"),
-            orderBy('timestamp', 'desc'),
-            startAfter(lastDoc || 0),
-            limit(LIMIT));
-
-        const nextdocumentSnapshots = await getDocs(next);
-        const newPost = await getPostWithFormat(nextdocumentSnapshots.docs)
-
-        setLastDoc(nextdocumentSnapshots.docs[nextdocumentSnapshots.docs.length - 1])
-        return newPost
-    }
-
-    const fetchMoreData = async () => {
-        const postFromServer = await fetchPost()
-
-        setPosts([...posts, ...postFromServer])
-        if (postFromServer.length == 0 || postFromServer.length < LIMIT) {
-            sethasMore(false)
-        }
-
-
-    }
-
-    const deletePost = async (post: PostType) => {
-
-        try {
-
-            await deleteDoc(doc(db, 'posts', post.id))
-            if (post.imageUrl) {
-                const postImageRef = ref(storage, post.imageUrl)
-                await deleteObject(postImageRef)
-            }
-
-            addToast('Delete post successfully', { appearance: 'notice' })
-        } catch (error) {
-            console.log(error)
-            addToast('Cannot delete post', { appearance: 'error' })
-        }
-    }
-
-    const likePost = async (post: PostType) => {
-        try {
-            if (!post.isLiked) {
-                const likeRef = collection(db, 'likes')
-                const data = {
-                    userId: user?.uid,
-                    postId: post.id
-                }
-                await addDoc(likeRef, data)
-                addToast(`You liked this post`, {appearance: 'notice'})
-            }
-
-        } catch (error) {
-            addToast(`Can't like this post.`, { appearance: 'error' })
-        }
-    }
+    
 
     const renderFeeds = () => {
-        if (loadingPage) {
+
+        
+        if (loading) {
             return <div className="flex justify-center mt-3 "><Loading /></div>
         }
         
@@ -110,29 +40,8 @@ const Feeds = () => {
             {posts.map(post => <Post
                 post={post}
                 key={post.id}
-                onDeletePost={deletePost}
-                onLikePost={likePost} />)}
+                />)}
         </InfiniteScroll> : <div className="text-center text-white"><p>No Post</p></div>
-    }
-
-    const getPostWithFormat = async (postDoc: DocumentData) => {
-        const tempPost = await Promise.all(postDoc.map(async (document: DocumentData) => {
-            const userSnapshot = await getDoc(doc(db, 'users', document.data().userId))
-            const likeQuery = query(collection(db, "likes"), where("postId", "==", document.id), where('userId', '==', user?.uid))
-            const likeSnapshot = await getDocs(likeQuery)
-
-            const post = {
-                id: document.id,
-                userDisplayName: userSnapshot.data()?.displayName,
-                userImage: userSnapshot.data()?.photoURL,
-                userEmail: userSnapshot.data()?.email,
-                isLiked: likeSnapshot.docs.length > 0,
-                ...document.data(),
-            }
-            return post
-        }));
-
-        return tempPost
     }
 
     return <div className=''>

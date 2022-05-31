@@ -6,19 +6,19 @@ import ProfileImage from "./profileImage"
 import useConfrim from "../hooks/useConfirm"
 import useAuth from "../hooks/useAuth"
 import { PostType } from "../types/post"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import usePost from "../hooks/usePost"
 
 
 interface PostProps {
-    post: PostType,
-    onDeletePost: (post: PostType) => void,
-    onLikePost: (post: PostType) => void
+    post: PostType
 }
 
-const Post = ({ post, onDeletePost, onLikePost }: PostProps) => {
+const Post = ({ post }: PostProps) => {
     const { confirm } = useConfrim()
     const { user } = useAuth()
-    const [liked, setLiked ] = useState(post.isLiked)
+    const {deletePost, likePost } = usePost()
+
     
     return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex gap-2 md:gap-5">
         <ProfileImage imageUrl={post?.userImage} />
@@ -37,16 +37,17 @@ const Post = ({ post, onDeletePost, onLikePost }: PostProps) => {
                 /></div>}
 
             <div className="flex gap-5 mt-5 items-center">
-                <FontAwesomeIcon icon={faThumbsUp} className={`text-white cursor-pointer ${liked ? 'text-teal-500' : ''}`} onClick={() => {
-                    setLiked(!liked)
-                    onLikePost(post)}}/>
+                <FontAwesomeIcon icon={faThumbsUp} className={`text-white cursor-pointer ${post.isLiked ? 'text-teal-500' : ''}`} onClick={() => {
+                    likePost(post)
+
+                    }}/>
                 <FontAwesomeIcon icon={faComment} className={`text-white cursor-pointer`} />
                 { post.userId === user?.uid &&
                     <div className="w-full text-right">
                         <FontAwesomeIcon icon={faTrash} className={`text-white cursor-pointer`} onClick={async () => {
                             const isConfirm = await confirm('Delete post?')
                             if(isConfirm) {
-                                onDeletePost(post)
+                                deletePost(post)
                             }
                         }
                             } />
@@ -59,4 +60,3 @@ const Post = ({ post, onDeletePost, onLikePost }: PostProps) => {
 }
 export default Post
 
-export { PostType }
