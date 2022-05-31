@@ -21,11 +21,11 @@ const Container = ({ children }: ContainerProps) => {
             </div>
             <div className='pt-9 border-x-2 border-teal-500 w-[100%] '> {children}</div>
             {
-                    openMenu && <div className="absolute bottom-[80px] left-[20px]" ref={menuRef}>
+                    openMenu && <div className="fixed bottom-[80px] left-[20px] bg-[#222222] shadow-lg shadow-teal-500" ref={menuRef}>
                         <LeftBar />
                     </div>
             }
-            <div className="block md:hidden absolute bottom-[20px] left-[20px]" >
+            <div className="block md:hidden fixed bottom-[20px] left-[20px]" >
                 <button className="bg-teal-500 px-3 py-2" onClick={() => setOpenMenu(!openMenu)}>
                     <FontAwesomeIcon icon={faHamburger} />
                 </button>
