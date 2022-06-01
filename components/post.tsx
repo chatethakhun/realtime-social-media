@@ -8,6 +8,7 @@ import useAuth from "../hooks/useAuth"
 import { PostType } from "../types/post"
 import { useEffect, useState } from "react"
 import usePost from "../hooks/usePost"
+import { Like } from "../types/like"
 
 
 interface PostProps {
@@ -18,8 +19,8 @@ const Post = ({ post }: PostProps) => {
     const { confirm } = useConfrim()
     const { user } = useAuth()
     const {deletePost, likePost } = usePost()
-
     
+    const isLike: Boolean = post.likes.findIndex((like: Like) => like.userId === user?.uid) >= 0
     return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex gap-2 md:gap-5">
         <ProfileImage imageUrl={post?.userImage} />
         <div className="w-full">
@@ -37,10 +38,13 @@ const Post = ({ post }: PostProps) => {
                 /></div>}
 
             <div className="flex gap-5 mt-5 items-center">
-                <FontAwesomeIcon icon={faThumbsUp} className={`text-white cursor-pointer ${post.isLiked ? 'text-teal-500' : ''}`} onClick={() => {
+                
+                <FontAwesomeIcon icon={faThumbsUp} className={`text-white cursor-pointer ${isLike ? 'text-teal-500' : ''}`} onClick={() => {
                     likePost(post)
 
                     }}/>
+                {post.likes.length > 0 && <p className="text-white">{post.likes.length}</p>}
+                
                 <FontAwesomeIcon icon={faComment} className={`text-white cursor-pointer`} />
                 { post.userId === user?.uid &&
                     <div className="w-full text-right">

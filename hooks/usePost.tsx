@@ -2,6 +2,7 @@ import { addDoc, collection, deleteDoc, doc, DocumentData, getDoc, getDocs, limi
 import { deleteObject, ref } from "firebase/storage";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { db, storage } from "../lib/firebase";
+import { Like } from "../types/like";
 import { PostType } from "../types/post";
 import useAuth from "./useAuth";
 import useToast from "./useToast";
@@ -93,15 +94,16 @@ export const PostProvider = ({ children }: PostProviderProps) => {
     const getPostWithFormat = async (postDoc: DocumentData) => {
         const tempPost = await Promise.all(postDoc.map(async (document: DocumentData) => {
             const userSnapshot = await getDoc(doc(db, 'users', document.data().userId))
-            const likeQuery = query(collection(db, "likes"), where("postId", "==", document.id), where('userId', '==', user?.uid))
+            const likeQuery = query(collection(db, "likes"), where("postId", "==", document.id), where('postId', '==', document.id))
             const likeSnapshot = await getDocs(likeQuery)
-
+            const postLikes = likeSnapshot.docs.map((like) => ({ userId: like.data().userId}))
+            
             const post = {
                 id: document.id,
                 userDisplayName: userSnapshot.data()?.displayName,
                 userImage: userSnapshot.data()?.photoURL,
                 userEmail: userSnapshot.data()?.email,
-                isLiked: likeSnapshot.docs.length > 0,
+                likes: postLikes,
                 ...document.data(),
             }
             return post
@@ -113,7 +115,9 @@ export const PostProvider = ({ children }: PostProviderProps) => {
     
     const likePost = async (post: PostType) => {
         try {
-            if (!post.isLiked) {
+
+            let newLikesClone: Like[] = []
+            if (post.likes.length === 0) {
                 const likeRef = collection(db, 'likes')
                 const data = {
                     userId: user?.uid,
@@ -121,7 +125,7 @@ export const PostProvider = ({ children }: PostProviderProps) => {
                 }
 
                 
-
+                newLikesClone = [...post.likes as Like[], { userId: user?.uid}]
                 await addDoc(likeRef, data)
                 
                 addToast(`You liked this post`, {appearance: 'notice'})
@@ -130,25 +134,31 @@ export const PostProvider = ({ children }: PostProviderProps) => {
                 const likeSnapshot = await getDocs(likeQuery)
 
                 const liked = likeSnapshot.docs[0]
-
+                
+                
                 await deleteDoc(doc(db, 'likes', liked.id))
+                newLikesClone = post.likes.filter((like: Like) => like.userId !== user?.uid)
+                
                 addToast(`You disliked this post`, {appearance: 'notice'})
                 
             }
 
-
-            const clonePost = posts.map(data => {
+        
+            
+            const clonePosts: PostType[] = posts.map((data: PostType) => {
+                
                 if(data.id === post.id) {
                     return {
                         ...data,
-                        isLiked: !post.isLiked
+                        likes: newLikesClone
                     }
-                } else {
-                    return data
-                }
+                } 
+
+                return data
+                
             })
 
-            setPosts(clonePost)
+            setPosts(clonePosts)
 
         } catch (error) {
             addToast(`Can't like this post.`, { appearance: 'error' })

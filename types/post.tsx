@@ -1,3 +1,5 @@
+import { Like } from "./like";
+
 export interface  PostType  {
     id: string, 
     userDisplayName: string,
@@ -7,7 +9,7 @@ export interface  PostType  {
     imageUrl: string,
     userImage: string,
     userId: string,
-    isLiked: boolean,
+    likes: Like[],
 }
 
 
