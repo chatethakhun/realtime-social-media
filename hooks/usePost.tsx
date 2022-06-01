@@ -117,7 +117,10 @@ export const PostProvider = ({ children }: PostProviderProps) => {
         try {
 
             let newLikesClone: Like[] = []
-            if (post.likes.length === 0) {
+            const isLike: Boolean = post.likes.findIndex((like: Like) => like.userId === user?.uid) >= 0
+            console.log(isLike);
+            
+            if (!isLike) {
                 const likeRef = collection(db, 'likes')
                 const data = {
                     userId: user?.uid,
