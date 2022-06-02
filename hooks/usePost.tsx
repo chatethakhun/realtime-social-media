@@ -16,8 +16,9 @@ interface PostProps {
     posts: PostType[];
     loading: boolean;
     setPost: (posts: PostType[]) => void;
-    deletePost: (post: PostType) => void;
-    likePost: (posts: PostType) => void;
+    deletePost: (post: PostType) => Promise<void>;
+    likePost: (post: PostType) => Promise<void>;
+    commentPost: (post: PostType, message: string) => Promise<void>;
     fetchMoreData: () => void;
     hasMore: boolean
 }
@@ -27,8 +28,9 @@ const PostContext = createContext<PostProps>({
     posts: [],
     loading: false,
     setPost: (post: PostType[]) => {},
-    deletePost: (post: PostType) => {},
-    likePost: (post: PostType) => {},
+    deletePost: async (post: PostType) => {},
+    likePost: async (post: PostType) => {},
+    commentPost: async (post: PostType, message: string) => {},
     fetchMoreData: async() => {},
     hasMore: false
 })
@@ -179,9 +181,29 @@ export const PostProvider = ({ children }: PostProviderProps) => {
             addToast('Cannot delete post', { appearance: 'error' })
         }
     }
+
+
+    const commentPost = async (post: PostType, message: string) => {
+        try {
+            const data = {
+                message, 
+                userid: user?.uid,
+                postId: post.id
+            }
+            const commentRef = collection(db, 'comments')
+    
+    
+            await addDoc(commentRef, data)
+
+        } catch (error) {
+            addToast(`Can't comment this post`, { appearance: 'error'})
+        }
+        
+        
+    }
     
     const memoedValue = useMemo(() => ({
-        posts, loading, setPost, fetchMoreData, hasMore, likePost, deletePost
+        posts, loading, setPost, fetchMoreData, hasMore, likePost, deletePost, commentPost
     }), [loading, posts, hasMore])
 
 

@@ -12,6 +12,7 @@ import { useModal } from "../hooks/useModal"
 import ModalContainer from "./modalContainer"
 import { useRef } from "react"
 import useOnClickOutside from "../hooks/useOnClickOutside"
+import Comments from "./comments"
 
 
 interface PostProps {
@@ -37,23 +38,24 @@ const PostContent = ({ post, theme = 'dark' }: PostProps) => {
                 {post.message && <p className={`pre-line mt-2 ${textColor}`}>{post.message}</p>}
             </div>
         </div>
-    {post.imageUrl && <div className="w-full h-[300px] relative mt-2 mb-2">
-                <Image
-                    src={post.imageUrl}
-                    alt="Picture of the author"
-                    layout="fill"
-                    objectFit='contain'
-                /></div>
-            }
+        {post.imageUrl && <div className="w-full h-[300px] relative mt-2 mb-2">
+            <Image
+                src={post.imageUrl}
+                alt="Picture of the author"
+                layout="fill"
+                objectFit='contain'
+            /></div>
+        }
     </div>
 }
 
 const Post = ({ post }: PostProps) => {
     const { confirm } = useConfrim()
     const { user } = useAuth()
-    const { deletePost, likePost } = usePost()
+    const { deletePost, likePost, commentPost } = usePost()
     const { modalOpen, toggle } = useModal()
     const modalRef = useRef(null)
+
 
     useOnClickOutside(modalRef, () => toggle(false))
 
@@ -88,7 +90,38 @@ const Post = ({ post }: PostProps) => {
 
         <ModalContainer modalOpen={modalOpen}>
             <div className="w-[1000px] bg-white m-auto p-5" ref={modalRef}>
-                <PostContent post={post} theme="white"/>
+                <PostContent post={post} theme="white" />
+                <div className="mb-3"></div>
+                <div className="flex gap-5">
+                    <div className="basis-[40px] md:basis-[65px]"></div>
+                    <div className="basis-[100%]">
+                        <hr />
+                        <div className="mt-3 flex gap-3">
+                            <div className="basis-[60px]">
+                                <ProfileImage imageUrl={user?.photoURL} />
+                            </div>
+                            <div className="w-full flex items-center">
+                                <input name="comments"
+                                    placeholder="Write Message..."
+                                    className="w-full resize-none px-3 py-1 border rounded"
+                                    onKeyUp={(e) => {
+                                        e.preventDefault()
+                                        if (e.key === 'Enter') {
+                                            const target = e.target as HTMLTextAreaElement;
+                                            const message = target.value
+                                            if (message) {
+                                                commentPost(post, message)
+                                                target.value = ''
+                                            }
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <Comments />
+                    </div>
+                </div>
             </div>
         </ModalContainer>
     </div>
