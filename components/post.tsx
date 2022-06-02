@@ -16,35 +16,35 @@ import useOnClickOutside from "../hooks/useOnClickOutside"
 
 interface PostProps {
     post: PostType
+    theme?: string
 }
 
-const PostContent = ({ post }: PostProps) => {
-
+const PostContent = ({ post, theme = 'dark' }: PostProps) => {
+    const textColor = theme === 'dark' ? 'text-white' : 'text-grey'
     return <div className="w-full">
-        <div className="flex items-center mb-5 gap-5">
-            <div className="basis-[40px] md:basis-[60px]">
+        <div className="flex items-center mb gap-5">
+            <div className="basis-[40px] md:basis-[65px]">
                 <ProfileImage imageUrl={post?.userImage} />
             </div>
             <div className="basis-[100%] flex items-center">
-                <p className="text-white text-xl">{post?.userDisplayName || post?.userEmail}</p>
-                <p className="w-full text-white text-right text-sm">{moment(post?.timestamp?.toDate()).fromNow()}</p>
+                <p className={`${textColor} text-xl`}>{post?.userDisplayName || post?.userEmail}</p>
+                <p className={`w-full ${textColor} text-right text-sm`}>{moment(post?.timestamp?.toDate()).fromNow()}</p>
             </div>
         </div>
         <div className="flex gap-5">
-            <div className="basis-[40px] md:basis-[60px]"></div>
+            <div className="basis-[40px] md:basis-[65px]"></div>
             <div className="basis-[100%]">
-                {post.message && <p className="pre-line mt-2 text-white">{post.message}</p>}
-                {post.imageUrl && <div className="w-full h-[300px] relative mt-2 mb-2">
-                    <Image
-                        src={post.imageUrl}
-                        alt="Picture of the author"
-                        layout="fill"
-                        objectFit='contain'
-                    /></div>
-                }
+                {post.message && <p className={`pre-line mt-2 ${textColor}`}>{post.message}</p>}
             </div>
         </div>
-
+    {post.imageUrl && <div className="w-full h-[300px] relative mt-2 mb-2">
+                <Image
+                    src={post.imageUrl}
+                    alt="Picture of the author"
+                    layout="fill"
+                    objectFit='contain'
+                /></div>
+            }
     </div>
 }
 
@@ -58,13 +58,13 @@ const Post = ({ post }: PostProps) => {
     useOnClickOutside(modalRef, () => toggle(false))
 
     const isLike: Boolean = post.likes.findIndex((like: Like) => like.userId === user?.uid) >= 0
-    return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex flex-col gap-2 md:gap-5">
+    return <div className="px-3 md:px-5 border-b-2 border-teal-500 py-5 flex flex-col">
 
         <PostContent post={post} />
-        <div className="flex gap-5">
-            <div className="basis-[40px] md:basis-[60px]"></div>
+        <div className="flex gap-5 mt-5">
+            <div className="basis-[40px] md:basis-[65px]"></div>
             <div className="basis-[100%]">
-                <div className="flex gap-5 mt-5 items-center flex-1">
+                <div className="flex gap-5 items-center flex-1">
                     <FontAwesomeIcon icon={faThumbsUp} className={`text-white cursor-pointer ${isLike ? 'text-teal-500' : ''}`} onClick={() => {
                         likePost(post)
 
@@ -88,7 +88,7 @@ const Post = ({ post }: PostProps) => {
 
         <ModalContainer modalOpen={modalOpen}>
             <div className="w-[1000px] bg-white m-auto p-5" ref={modalRef}>
-                <p>{post.message}</p>
+                <PostContent post={post} theme="white"/>
             </div>
         </ModalContainer>
     </div>
